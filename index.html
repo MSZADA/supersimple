@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My New Node Server</title>
+    <style>
+        #tasks_table {
+            position: absolute;
+            left: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My New Node.js Server</h1>
+    <div id="taskdiv"></div>
+        <h3 id="tasks">Tasks</h3>
+        <table id="tasks_table" border="1">
+            <tr>
+                <th>Count</th>
+                <th>Task</th>
+                <th>Value</th>
+                <th>Note</th>
+                <th>Bonus</th>
+            </tr>
+            <tr>
+                <td id="button1"> </td>
+                <td>Bathroom Trash</td>
+                <td>1</td>
+                <td>+ Rebag</td>
+            </tr>
+            <tr>
+                <td id="button2"> </td>
+                <td>Kitchen Trash</td>
+                <td>1</td>
+                <td>+ Rebag</td>
+            </tr>
+            <tr>
+                <td id="button3">0</td>
+                <td>Dishes</td>
+                <td>1</td>
+                <td>1 Full Sink</td>
+                <td>No dirty dishes remaining: 1. All dried and put away: 1.</th>
+            </tr>
+            <tr>                
+                <td id="button4"> </td>
+                <td>Recycling</td>
+                <td>.5</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="button5"> </td>
+                <td>Inject</td>
+                <td>1</td>
+                <td></td>
+                <td>On Schedule: .2</td>
+            </tr>
+            <tr>
+                <td id="button6"> </td>
+                <td>Grocery Shopping</td>
+                <td>2</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="button7"> </td>
+                <td>wash laundry</td>
+                <td>1</td>
+                <td>(no dirty laundry remaining)</td>
+                <td>Put away with none remaining: 1.5</td>
+            </tr>
+            <tr>
+                <td id="button8"> </td>
+                <td>clean bedroom</td>
+                <td>1</td>
+                <td>Bed +closet +floor +dresser</td>
+            </tr>
+            <tr>
+                <td id="button9"> </td>
+                <td>Wash hair</td>
+                <td>1</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="button10"> </td>
+                <td>Shopping Errand</td>
+                <td>1</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="button11">0</td>
+                <td>Apply for job</td>
+                <td>4</td>
+                <td></td>
+                <td>4 or more applied: 2.</td>
+            </tr>
+            <tr>
+                <td id="button12">0</td>
+                <td>2 hrs/ homework</td>
+                <td>1</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td id="button13"> </td>
+                <td>ready before 10 am</td>
+                <td>1</td>
+                <td>(shower, teeth, clothes, skin routine)</td>
+            </tr>
+        </table>
+
+    <script>
+        async function updateServer(data) {
+            try {
+                const response  = await fetch('/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+        
+        function buttonHandler(event) {
+            console.log(event.target.id);
+            let innertext = document.getElementById(event.target.id).innerText;
+            console.log(innertext);
+            if (event.button === 0) {                                                           // If left click: Increment, or if not labeled as number, change status to 'complete'.
+                console.log('left click detected');
+                if (/^\d+$/.test(innertext)) {                                                  // Test if number
+                    document.getElementById(event.target.id).innerText = Number(innertext) + 1;  // increment if number
+                    
+                } else {
+                    document.getElementById(event.target.id).innerText = "Complete";             // If not number, change to Complete
+                }
+            } else if (event.button === 2) {
+                console.log('Right click detected');
+                if (!isNaN(Number(innertext)) && innertext !== "") {            
+                    if ((innertext) > 0) {
+                        document.getElementById(event.target.id).innerText = Number(innertext) - 1;  // decrement if number 
+                        console.log(2)
+                    } else {
+                        document.getElementById(event.target.id).innerText = Number(0);
+                        console.log(3)
+                    }
+                } else if (innertext === "" || innertext === "Complete" || innertext === null) {
+                    document.getElementById(event.target.id).innerText = "";             // If not number, change to Complete
+                    console.log('right click else')
+                }
+            }
+        }
+        
+        // Task button click event listeners:
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('td[id^="button"]');
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function(event) {
+                    buttonHandler(event);
+                });
+                button.addEventListener('contextmenu', function(event) {
+                    event.preventDefault();
+                });
+            });
+        });
+
+        
+
+
+
+            
+
+    </script>
+</body>
+</html>
